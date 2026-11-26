@@ -1,0 +1,15 @@
+﻿{
+    "name":  "P4 Digital Mixing",
+    "version":  "2.2.0",
+    "builds":  [
+                   {
+                       "chipFamily":  "ESP32-P4",
+                       "parts":  [
+                                     {
+                                         "path":  "firmware/P4-Digital-Mixing-v2.2.0-factory.bin",
+                                         "offset":  0
+                                     }
+                                 ]
+                   }
+               ]
+}
