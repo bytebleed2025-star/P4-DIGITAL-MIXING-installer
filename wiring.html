@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wiring - P4 Digital Mixing</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070b12'/%3E%3Ctext x='32' y='40' font-family='monospace' font-size='20' font-weight='700' text-anchor='middle' fill='%2338bdf8'%3EP4%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#04060a; --line:rgba(255,255,255,.09);
+    --text:#e8edf6; --dim:#8592a6; --cyan:#38bdf8; --amber:#fbbf24; --violet:#c084fc;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    min-height:100vh; color:var(--text);
+    font:15px/1.6 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(90% 60% at 50% -10%, rgba(56,189,248,.10), transparent 60%),
+      radial-gradient(70% 50% at 90% 110%, rgba(251,191,36,.07), transparent 60%),
+      var(--bg);
+    padding:26px 18px 48px;
+  }
+  .wrap{max-width:940px;margin:0 auto}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font:800 .9rem ui-monospace,Consolas,monospace;color:#04060a;background:linear-gradient(135deg,var(--cyan),var(--amber));box-shadow:0 10px 22px -10px rgba(56,189,248,.9)}
+  .name{font-weight:800;font-size:1.05rem}
+  .tag{font-size:.66rem;color:var(--dim);font-family:ui-monospace,Consolas,monospace}
+  .back{font:600 .7rem ui-monospace,Consolas,monospace;color:var(--cyan);text-decoration:none;border:1px solid rgba(56,189,248,.35);padding:7px 11px;border-radius:999px}
+  .card{background:linear-gradient(165deg,rgba(17,24,36,.94),rgba(7,11,18,.96));border:1px solid var(--line);border-radius:16px;padding:20px;margin:0 0 14px;box-shadow:0 26px 60px -38px #000,inset 0 1px 0 rgba(255,255,255,.05)}
+  h1{margin:0 0 4px;font-size:1.8rem;letter-spacing:-.03em}
+  .sub{margin:0 0 18px;color:var(--dim);font-size:.86rem}
+  h2{margin:0 0 10px;font:700 .68rem ui-monospace,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+  h3{margin:16px 0 7px;font-size:.95rem;color:#dbe7f2}
+  p{margin:0 0 10px;color:#c6d0de;font-size:.86rem}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;margin:0 0 8px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top}
+  th{color:var(--dim);font:600 .62rem ui-monospace,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+  td:first-child{color:#dbe7f2}
+  code{font-family:ui-monospace,Consolas,monospace;font-size:.76rem;color:#bfe8ff;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.16);padding:1px 4px;border-radius:4px}
+  .note{color:#d8c9a3;font-size:.8rem;border-left:2px solid var(--amber);padding-left:10px;margin:10px 0}
+  .badge{display:inline-block;font:700 .58rem ui-monospace,Consolas,monospace;letter-spacing:.08em;padding:3px 7px;border-radius:999px;color:var(--amber);border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08)}
+  footer{margin-top:18px;text-align:center;color:var(--dim);font:600 .62rem ui-monospace,Consolas,monospace;letter-spacing:.06em}
+  footer a{color:#9fb4cc;text-decoration:none}
+  @media(max-width:640px){.card{padding:14px}h1{font-size:1.45rem}table{font-size:.72rem}th,td{padding:6px 5px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark">P4</div>
+      <div>
+        <div class="name">P4 Digital Mixing</div>
+        <div class="tag">Wiring guide &middot; ESP32-P4-NANO</div>
+      </div>
+    </div>
+    <a class="back" href="index.html">&larr; Installer</a>
+  </header>
+
+  <section class="card">
+    <h1>Exact wiring</h1>
+    <p class="sub">PCM1808 stereo input, optional PCM5102 output, on the Waveshare ESP32-P4-NANO.</p>
+
+    <table>
+      <tr><th>Item</th><th>Value</th></tr>
+      <tr><td>Board</td><td>Waveshare ESP32-P4-NANO</td></tr>
+      <tr><td>I2S peripheral</td><td><code>I2S_NUM_1</code> (I2S0 is reserved for the on-board ES8311)</td></tr>
+      <tr><td>Sample rate</td><td>48 kHz / 32-bit stereo</td></tr>
+      <tr><td>Default output</td><td>Disabled while <code>I2S_DOUT_PIN = -1</code></td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Power and ground</h2>
+    <table>
+      <tr><th>Rail</th><th>Connect to</th></tr>
+      <tr><td>5 V</td><td>P4 board <code>5V</code>/USB-C input, PCM1808 <code>VCC</code>, optional PCM5102 <code>VIN</code></td></tr>
+      <tr><td>GND</td><td>P4 board GND, PCM1808 GND, optional PCM5102 GND</td></tr>
+      <tr><td>3.3 V</td><td>Optional PCM5102 <code>XSMT</code> (unmute)</td></tr>
+    </table>
+    <p class="note">Use one common ground. Do not feed 5 V into any P4 GPIO. Keep I2S wires short and add 100 nF + 10 uF at each codec board.</p>
+  </section>
+
+  <section class="card">
+    <h2>PCM1808 input</h2>
+    <table>
+      <tr><th>ESP32-P4 signal</th><th>GPIO</th><th>PCM1808</th></tr>
+      <tr><td>MCLK</td><td><code>20</code></td><td><code>SCKI</code></td></tr>
+      <tr><td>BCK</td><td><code>22</code></td><td><code>BCK</code></td></tr>
+      <tr><td>LRCK</td><td><code>21</code></td><td><code>LRCK</code></td></tr>
+      <tr><td>DIN (P4 RX)</td><td><code>23</code></td><td><code>DOUT</code></td></tr>
+    </table>
+
+    <h3>PCM1808 module</h3>
+    <table>
+      <tr><th>PCM1808 pin</th><th>Connect</th></tr>
+      <tr><td><code>VCC</code></td><td>5 V (or 3.3 V if your module is 3.3 V-only)</td></tr>
+      <tr><td><code>GND</code></td><td>Common GND</td></tr>
+      <tr><td><code>SCKI</code></td><td>GPIO20 (MCLK, 384 fs)</td></tr>
+      <tr><td><code>BCK</code></td><td>GPIO22</td></tr>
+      <tr><td><code>LRCK</code></td><td>GPIO21</td></tr>
+      <tr><td><code>DOUT</code></td><td>GPIO23</td></tr>
+      <tr><td><code>DIN</code></td><td>Not connected</td></tr>
+      <tr><td><code>FMT</code></td><td>GND = I2S</td></tr>
+      <tr><td><code>MD0</code></td><td>GND</td></tr>
+      <tr><td><code>MD1</code></td><td>GND = slave mode</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Optional PCM5102 output</h2>
+    <p>Output is disabled by default. Choose a free P4 header GPIO, set it in <code>main/settings.h</code>:</p>
+    <p><code>#define I2S_DOUT_PIN  &lt;free GPIO&gt;</code></p>
+    <table>
+      <tr><th>ESP32-P4 signal</th><th>GPIO</th><th>PCM5102</th></tr>
+      <tr><td>BCK</td><td><code>22</code></td><td><code>BCK</code></td></tr>
+      <tr><td>LRCK</td><td><code>21</code></td><td><code>LRCK</code></td></tr>
+      <tr><td>DOUT</td><td>free GPIO</td><td><code>DIN</code></td></tr>
+    </table>
+    <table>
+      <tr><th>PCM5102 pin</th><th>Connect</th></tr>
+      <tr><td><code>VIN</code></td><td>3.3 V or 5 V (module dependent)</td></tr>
+      <tr><td><code>GND</code></td><td>Common GND</td></tr>
+      <tr><td><code>SCK</code></td><td>GND = internal PLL from BCK</td></tr>
+      <tr><td><code>FMT</code></td><td>GND = I2S</td></tr>
+      <tr><td><code>DEMP</code></td><td>GND = de-emphasis off</td></tr>
+      <tr><td><code>XSMT</code></td><td>3.3 V = unmuted</td></tr>
+      <tr><td><code>FLS</code></td><td>GND</td></tr>
+    </table>
+    <p class="note">The PCM5102 output is line level (~2 Vrms). Never connect it directly to a speaker. Use a power amplifier or active speakers.</p>
+  </section>
+
+  <section class="card">
+    <h2>Board notes</h2>
+    <ul>
+      <li>The P4-NANO uses its on-board ESP32-C6 for Wi-Fi over SDIO; those pins are internal and not part of this wiring.</li>
+      <li><code>I2S0</code> is reserved for the on-board ES8311. The mixer uses <code>I2S_NUM_1</code> on the header pins above.</li>
+      <li>Check the P4-NANO header silkscreen: use the GPIO number, not the physical pin number.</li>
+      <li>If clocks ring or the codec locks unreliably, add a 33-100 ohm series resistor at the P4 end of MCLK/BCK/LRCK.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>After wiring</h2>
+    <div class="kv" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:.8rem"><span style="color:var(--dim)">Wi-Fi AP</span><b>AudioMixer-8ch</b></div>
+    <div class="kv" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:.8rem"><span style="color:var(--dim)">Password</span><b>mixer1234</b></div>
+    <div class="kv" style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem"><span style="color:var(--dim)">Web UI</span><b>192.168.4.1</b></div>
+    <p style="margin-top:10px"><span class="badge">P4MIX1</span></p>
+  </section>
+
+  <footer>
+    <a href="index.html">Back to installer</a> &nbsp;&middot;&nbsp;
+    <a href="https://github.com/bytebleed2025-star/P4-DIGITAL-MIXING-installer">Installer repository</a>
+  </footer>
+</div>
+</body>
+</html>
